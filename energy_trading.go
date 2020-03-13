@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/hyperledger/fabric-chaincode-go/tree/master/shim"
 	"sort"
 	"strconv"
-
-	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
 var logger = shim.NewLogger("energy_trading")

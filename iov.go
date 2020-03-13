@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hyperledger/fabric-chaincode-go/shim"
+	"github.com/hyperledger/fabric-chaincode-go/tree/master/shim"
 	"github.com/hyperledger/fabric-protos-go"
 	"math"
 	"sort"
