@@ -6,6 +6,8 @@ import (
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-protos-go"
 	"math"
+	"sort"
+	"strconv"
 )
 
 func main() {
@@ -15,26 +17,26 @@ func main() {
 }
 
 type Vehicle struct {
-	modelCompany string 'json:"company"'
-	modelType    string 'json:"type"'
-	modelName    string 'json:"name"'
-	modelID      float64 'json:"Id"'
+	modelCompany string `json:"company"`
+	modelType    string `json:"type"`
+	modelName    string `json:"name"`
+	modelID      float64 `json:"Id"`
 	owner        Owner 
 	gps          GPS
 }
 
 type Owner struct {
-	fName      string 'json:"fName"'
-	lName      string 'json:"lName"'
-	licenseNum string 'json:"licenseNum"'
-	insurance  string 'json:"insurance"'
-	gender     string 'json:"gender"'
-	phoneNo    string 'json:"phoneNo"'
-	address    string 'json:"address"'
+	fName      string `json:"fName"`
+	lName      string `json:"lName"`
+	licenseNum string `json:"licenseNum"`
+	insurance  string `json:"insurance"`
+	gender     string `json:"gender"`
+	phoneNo    string `json:"phoneNo"`
+	address    string `json:"address"`
 }
 type GPS struct {
-	lat  float64 'json:"lat"'
-	long float64 'json:"long"'
+	lat  float64 `json:"lat"`
+	long float64 `json:"long"`
 }
 
 "Init..."
@@ -42,7 +44,7 @@ func (c *Vehicle) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	func (c *AssetMgr) Init(stub shim.ChaincodeStubInterface) pb.Response { args := stub.GetStringArgs()
 
 		if len(args) != 11 {
-		return shim.Error(“Incorrect arguments. Expecting a key and a value”)}
+		return shim.Error("Incorrect arguments. Expecting a key and a value")}
 		modelcompany := args[0]
 		modeltype := args[1]
 		modelname := args[2]
@@ -72,7 +74,7 @@ func (c *Vehicle) Init(stub shim.ChaincodeStubInterface) pb.Response {
 		}
 		assetBytes, _ := json.Marshal(assetData) assetErr := stub.PutState(assetId, assetBytes) 
 		if assetErr != nil {
-		return shim.Error(fmt.Sprintf(“Failed to create asset: %s”, args[0]))
+		return shim.Error(fmt.Sprintf("Failed to create asset: %s", args[0]))
 		}
 	return shim.Success(nil)
 }
@@ -80,18 +82,18 @@ func (c *Vehicle) Init(stub shim.ChaincodeStubInterface) pb.Response {
 "Invoke..."
 func (c *Vehicle) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	function, args := stub.GetFunctionAndParameters()
-	if function == “Order” {
+	if function == "Order" {
 	return c.Order(stub, args)       
-	} else if function == “Request” {   
+	} else if function == "Request" {   
 	return c.Request(stub, args) 
-	} else if function == “RetrieveStatusSOC” {    
+	} else if function == "RetrieveStatusSOC" {    
 	return c.RetrieveStatusSOC(stub, args)  
-	} else if function == “getVehicle” {  
+	} else if function == "getVehicle" {  
 	return c.getVehicle(stub, args)
-	} else if function == “getAllVehicle” {    
+	} else if function == "getAllVehicle" {    
 	return c.getAllVehicle(stub, args)  
 	}             
-	return shim.Error(“Invalid function name”)
+	return shim.Error("Invalid function name")
 }
 
 func addNewPeer(vehicleArray []Vehicle) {
