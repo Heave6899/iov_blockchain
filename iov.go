@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/protos/peer"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+	"github.com/hyperledger/fabric-protos-go"
 	"math"
 )
 
@@ -92,10 +92,6 @@ func (c *Vehicle) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	return c.getAllVehicle(stub, args)  
 	}             
 	return shim.Error(“Invalid function name”)
-}
-
-func (c *Vehicle) shortestpath(stub shim.ChaincodeStubInterface, args	[]string) pb.Response {
-
 }
 
 func addNewPeer(vehicleArray []Vehicle) {

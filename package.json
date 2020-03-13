@@ -1,0 +1,22 @@
+{
+  "name": "iov_blockchain",
+  "version": "1.0.0",
+  "description": "This project enables hyperledger fabric to evolve the iov energy trading",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Heave6899/iov_blockchain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Heave6899/iov_blockchain/issues"
+  },
+  "homepage": "https://github.com/Heave6899/iov_blockchain#readme",
+  "dependencies": {
+    "fabric-shim": "^2.0.0"
+  }
+}
