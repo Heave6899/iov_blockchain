@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/hyperledger/fabric/protos/peer"
 	"math"
 )
 
@@ -12,66 +15,87 @@ func main() {
 }
 
 type Vehicle struct {
-	modelCompany string
-	modelType    string
-	modelName    string
-	modelID      float64
-	owner        Owner
+	modelCompany string 'json:"company"'
+	modelType    string 'json:"type"'
+	modelName    string 'json:"name"'
+	modelID      float64 'json:"Id"'
+	owner        Owner 
 	gps          GPS
 }
 
 type Owner struct {
-	fName      string
-	lName      string
-	licenseNum string
-	insurance  string
-	gender     string
-	phoneNo    string
-	address    string
+	fName      string 'json:"fName"'
+	lName      string 'json:"lName"'
+	licenseNum string 'json:"licenseNum"'
+	insurance  string 'json:"insurance"'
+	gender     string 'json:"gender"'
+	phoneNo    string 'json:"phoneNo"'
+	address    string 'json:"address"'
 }
 type GPS struct {
-	lat  float64
-	long float64
+	lat  float64 'json:"lat"'
+	long float64 'json:"long"'
 }
 
-func newPeer() Vehicle {
-	var modelCompany, modelType, modelName, fName, lName, licenseNum, insurance, g, phno, add string
-	var modelID, lat, long float64
-	fmt.Scan(&modelCompany)
-	fmt.Scan(&modelType)
-	fmt.Scan(&modelName)
-	fmt.Scan(&modelID)
-	fmt.Scan(&fName)
-	fmt.Scan(&lName)
-	fmt.Scan(&licenseNum)
-	fmt.Scan(&insurance)
-	fmt.Scan(&g)
-	fmt.Scan(&phno)
-	fmt.Scan(&add)
-	fmt.Scan(&lat)
-	fmt.Scan(&long)
-	//fmt.Print("It's done")
-	v := Vehicle{
-		modelCompany: modelCompany,
-		modelType:    modelType,
-		modelName:    modelName,
-		modelID:      modelID}
-	v.gps = GPS{
-		lat:  lat,
-		long: long,
-	}
-	v.owner = Owner{
-		fName:      fName,
-		lName:      lName,
-		licenseNum: licenseNum,
-		insurance:  insurance,
-		gender:     g,
-		phoneNo:    phno,
-		address:    add,
-	}
-	//fmt.Print("function Exit")
-	//fmt.Print(v)
-	return v
+"Init..."
+func (c *Vehicle) Init(stub shim.ChaincodeStubInterface) pb.Response {
+	func (c *AssetMgr) Init(stub shim.ChaincodeStubInterface) pb.Response { args := stub.GetStringArgs()
+
+		if len(args) != 11 {
+		return shim.Error(“Incorrect arguments. Expecting a key and a value”)}
+		modelcompany := args[0]
+		modeltype := args[1]
+		modelname := args[2]
+		modelid := args[3]
+		fname := args[4]
+		lname := args[5]
+		licensenum := args[6]
+		insure := args[7]
+		gen := args[8]
+		phoneno := args[9]
+		add := args[10]
+		//create asset
+		assetData := Vehicle{
+			modelCompany : modelcompany,
+			modelType : modeltype,
+			modelID : modelid,
+			modelName : modelname,
+		}
+		assetData.owner = Owner{
+			fName:      fname,
+			lName:      lname,
+			licenseNum: licensenum,
+			insurance:  insure,
+			gender:     gen,
+			phoneNo:    phoneno,
+			address:    add,
+		}
+		assetBytes, _ := json.Marshal(assetData) assetErr := stub.PutState(assetId, assetBytes) 
+		if assetErr != nil {
+		return shim.Error(fmt.Sprintf(“Failed to create asset: %s”, args[0]))
+		}
+	return shim.Success(nil)
+}
+
+"Invoke..."
+func (c *Vehicle) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+	function, args := stub.GetFunctionAndParameters()
+	if function == “Order” {
+	return c.Order(stub, args)       
+	} else if function == “Request” {   
+	return c.Request(stub, args) 
+	} else if function == “RetrieveStatusSOC” {    
+	return c.RetrieveStatusSOC(stub, args)  
+	} else if function == “getVehicle” {  
+	return c.getVehicle(stub, args)
+	} else if function == “getAllVehicle” {    
+	return c.getAllVehicle(stub, args)  
+	}             
+	return shim.Error(“Invalid function name”)
+}
+
+func (c *Vehicle) shortestpath(stub shim.ChaincodeStubInterface, args	[]string) pb.Response {
+
 }
 
 func addNewPeer(vehicleArray []Vehicle) {
@@ -105,3 +129,9 @@ func algoshortPath(lat1 float64, lat2 float64, long1 float64, long2 float64) flo
 
 	return km * 0.68953
 }
+
+func main() {
+	err := shim.Start(new(Vehicle))
+	if err != nil {
+		fmt.Printf("Error creating new Vehicle Contract: %s", err)
+	}
